@@ -13,27 +13,28 @@
 
     <div class="container">
         <br>
-        <nav aria-label="breadcrumb">
-            <div class="row">
-                <div class="col-md-7">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/trang-chu">Trang chủ</a></li>
-                        <li class="breadcrumb-item"><a href="/cua-hang">Cửa hàng</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ $giay['ten_giay'] }}</li>
-                    </ol>
-                    <br>
-                </div>
-                @foreach ($gio_hangs as $id => $giohang)
-                    @if ($giohang['ten_giay'] == $giay['ten_giay'])
-                        <div class="col-md-5">
-                            <div class="alert alert-success" role="alert">
-                                <i class="fas fa-check-circle"></i>&ensp;Sản phẩm này đã được thêm vào giỏ hàng của bạn!
-                            </div>
-                        </div>
-                    @endif
-                @endforeach
+        
+        <!-- Flash Messages -->
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-
+        @endif
+        
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/trang-chu">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/cua-hang">Cửa hàng</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $giay['ten_giay'] }}</li>
+            </ol>
         </nav>
 
         <div class="row">
@@ -107,15 +108,124 @@
                                 <small class="text-muted"></small>
                             </p>
 
+                            <!-- Thông tin tồn kho -->
+                            <!-- <pre>{{ json_encode($giay->chitiet, JSON_PRETTY_PRINT) }}</pre> -->
+                            @php
+$tong_so_luong = 0;
+foreach ($giay->chitiet as $ct) {
+    $tong_so_luong += $ct->so_luong;
+}
+@endphp
+    <!-- $tong_so_luong = ($giay->chitiet ?? collect())->sum('so_luong');
+@endphp -->
+<!-- xemdata -->
+<!-- <pre>{{ json_encode($giay->chitiet, JSON_PRETTY_PRINT) }}</pre>
+<pre>Tổng số lượng: {{ $tong_so_luong }}</pre> -->
 
-                            <a href="/cua-hang/san-pham={{ $giay['id_giay'] }}/them" type="button" class="btn btn-info"
-                                style="margin-top: 10px"
-                                data-url="{{ route('them-vao-gio-hang', ['id' => $giay['id_giay']]) }}">
-                                <i class="far fa-heart"></i>
-                                &ensp;Thêm vào giỏ hàng
-                            </a>
-                            <a type="button" href="#ex2-tabs-1" class="btn btn-light">Chi tiết</a>
+<p class="card-text">
+    <b>Tình trạng: </b>
+    @if($tong_so_luong > 0)
+        <span class="text-success"><i class="fas fa-check-circle"></i> Còn hàng ({{ $tong_so_luong }} sản phẩm)</span>
+    @else
+        <span class="text-danger"><i class="fas fa-times-circle"></i> Hết hàng</span>
+    @endif
+</p>
 
+<!-- <form action="/cua-hang/san-pham={{ $giay['id_giay'] }}/them" method="GET" id="addToCartForm"> -->
+<form action="/cua-hang/san-pham={{ $giay->id_giay }}/them" method="GET" id="addToCartForm">
+    @if(!empty($giay->sizes))
+        <div class="mb-3">
+            <label for="shoe_size" class="form-label"><b>Chọn Size:</b></label>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach(explode(',', $giay->sizes) as $size)
+                    <input type="radio" class="btn-check" name="size" id="size-{{ $size }}" value="{{ trim($size) }}" autocomplete="off" required>
+                    <label class="btn btn-outline-primary" for="size-{{ $size }}">{{ trim($size) }}</label>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    <!-- Hiển thị tồn kho theo size -->
+    @php
+    // Tạo mảng tồn kho theo size để JS dùng
+    $tonkhoBySize = [];
+    foreach ($giay->chitiet as $ct) {
+        $tonkhoBySize[$ct->size] = $ct->so_luong;
+    }
+@endphp
+
+<div class="mb-3">
+    <label class="form-label"><b>Số lượng còn:</b></label>
+    <span id="so_luong_hien_tai" class="text-muted">Vui lòng chọn size</span>
+</div>
+
+<script>
+    var tonKhoData = @json($tonkhoBySize);
+
+    $(document).ready(function () {
+        $('input[name="size"]').on('change', function () {
+            let size = $(this).val();
+            let soLuong = tonKhoData[size] ?? 0;
+
+            if (soLuong > 0) {
+                $('#so_luong_hien_tai')
+                    .removeClass('text-muted text-danger')
+                    .addClass('text-success')
+                    .text(soLuong + ' sản phẩm');
+            } else {
+                $('#so_luong_hien_tai')
+                    .removeClass('text-success text-muted')
+                    .addClass('text-danger')
+                    .text('Hết hàng');
+            }
+        });
+    });
+</script>
+
+
+    @if($tong_so_luong > 0)
+        <button type="submit" class="btn btn-info" style="margin-top: 10px">
+            <i class="far fa-heart"></i>
+            &ensp;Thêm vào giỏ hàng
+        </button>
+    @else
+        <button type="button" class="btn btn-secondary" style="margin-top: 10px" disabled>
+            <i class="fas fa-times"></i>
+            &ensp;Hết hàng
+        </button>
+    @endif
+    <a type="button" href="#ex2-tabs-1" class="btn btn-light" style="margin-top: 10px">Chi tiết</a>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('input[name="size"]').on('change', function () {
+            let size = $(this).val();
+            let id_giay = {{ $giay['id_giay'] }};
+
+            if (size) {
+                $.ajax({
+                    url: `/lay-so-luong/${id_giay}/${size}`,
+                    type: 'GET',
+                    success: function (data) {
+                        if (data.so_luong > 0) {
+                            $('#so_luong_hien_tai')
+                                .removeClass('text-muted text-danger')
+                                .addClass('text-success')
+                                .text(data.so_luong + ' sản phẩm');
+                        } else {
+                            $('#so_luong_hien_tai')
+                                .removeClass('text-success text-muted')
+                                .addClass('text-danger')
+                                .text('Hết hàng');
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
 
                         </div>
                     </div>
@@ -162,9 +272,20 @@
                             <p>✔️ <b>Loại giày: </b>{{ $giay['ten_loai_giay'] }}</p>
                             <p>✔️ <b>Thương hiệu: </b>{{ $giay['ten_thuong_hieu'] }}</p>
                             <p>✔️ <b>Giá gốc: </b>{{ number_format($giay['don_gia']) }} VNĐ</p>
-                            <p>✔️ <b>Số lượng còn lại: </b>{{ $giay['so_luong'] }}</p>
+                            <!-- <p>✔️ <b>Số lượng còn lại: </b>{{ $giay['so_luong'] }}</p> -->
                             <p>✔️ <b>Khuyến mãi: </b>{{ $giay['ten_khuyen_mai'] }} (-{{ $gtkm }}%)</p>
                             <p>✔️ <b>Đánh giá: </b>{{ $giay['danh_gia'] }}</p>
+                            <p>✔️ <b>Tổng tồn kho: </b>{{ $tong_so_luong }}</p>
+<!-- @if($giay->chitiet->count())
+    <p>✔️ <b>Chi tiết tồn kho:</b></p>
+    <ul>
+        @foreach($giay->chitiet as $ct)
+            <li>Size: {{ $ct->size }} - Số lượng: {{ $ct->so_luong }}</li>
+        @endforeach
+    </ul>
+@endif -->
+
+
                             <br>
                         </div>
                         <div class="tab-pane fade" id="ex2-tabs-3" role="tabpanel" aria-labelledby="ex2-tab-3">

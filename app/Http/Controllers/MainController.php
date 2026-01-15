@@ -270,19 +270,6 @@ class MainController extends Controller
 
     // Register;
     public function storeReg(Request $request){
-        // $request->validate([
-        //     'ten_nguoi_dung' => 'required',
-        //     'email' => 'required | email | unique:users',
-        //     'sdt' => 'required',
-        //     'Ten_dang_nhap' => 'required | unique:users',
-        //     'password' => 'required | min:5 | confirmed',
-        //     'id_phan_quyen' => 'required',
-        // ],[
-        //     'email.unique' => '* Email đã tồn tại.',
-        //     'Ten_dang_nhap.unique' => '* Tên đăng nhập đã tồn tại.',
-        //     'password.min' => '* Mật khẩu phải chứa ít nhất 5 kí tự.',
-        //     'password.confirmed' => '* Mật khẩu xác nhận nhập không đúng.',
-        // ]);
 
         User::create([
             'ten_nguoi_dung' => $request->input('ten_nguoi_dung'),
@@ -326,7 +313,7 @@ class MainController extends Controller
 
                     if($userinfoUser->id_phan_quyen == '1'){
                         session()->put('check', '1');
-                        return view('admin.trangchu.trangchu')
+                        return view('admin.index')
                         ->with('data', $data)
                         ->with('thuonghieus', $thuonghieus)
                         ->with('loaigiays', $loaigiays)
@@ -337,7 +324,7 @@ class MainController extends Controller
                         ->with('giaymoinhats', $giaymoinhats)
                         ->with('giaynoibats', $giaynoibats)
                         ;
-                    }else{
+                    } else{
                         session()->put('check', '2');
                         return view('index')->with('data', User::where('id',session('DangNhap'))->first())->with('route', 'trang-chu')
                         ->with('thuonghieus', $thuonghieus)
@@ -372,7 +359,7 @@ class MainController extends Controller
                 if($userinfoEmail->id_phan_quyen == '1'){
                     
                     session()->put('check', '1');
-                    return view('admin.trangchu.trangchu')
+                    return view('admin.index')
                     ->with('data', $data)
                     ->with('thuonghieus', $thuonghieus)
                     ->with('loaigiays', $loaigiays)
@@ -403,19 +390,6 @@ class MainController extends Controller
                 return back()->with('thatbai','* Mật khẩu nhập không đúng, vui lòng nhập lại');
             }
         }
-
-        // $userinfoUser = User::where('Ten_dang_nhap', $request->ten_dang_nhap)->first();
-        // if (!$userinfoUser){
-        //     return back()->with('thatbai','* Tên đăng nhập hoặc Email không tồn tại!');
-        // } else {
-        //     if (Hash::check($request->password, $userinfoUser->password)){
-        //         $request->session()->put('DangNhap', $userinfoUser->id);
-
-        //         return view('admin.trangchu.trangchu')->with('data', User::where('id',session('DangNhap'))->first());
-        //     } else {
-        //         return back()->with('thatbai','* Mật khẩu nhập không đúng, vui lòng nhập lại');
-        //     }
-        // }
 
     }
 
@@ -501,7 +475,7 @@ class MainController extends Controller
         return Redirect('/admin/taikhoan');
 
     }
-
+ 
     /**
      * Remove the specified resource from storage.
      *

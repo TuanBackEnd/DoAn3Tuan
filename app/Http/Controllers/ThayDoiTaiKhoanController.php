@@ -55,7 +55,7 @@ class ThayDoiTaiKhoanController extends Controller
         $data['Ten_dang_nhap'] = $request->Ten_dang_nhap;
         // $data['password'] = $request->password;
         $data['password'] = Hash::make($request->password);
-        // $data['id_phan_quyen'] = '2';
+   
 
         $data->save();
         return Redirect('/');

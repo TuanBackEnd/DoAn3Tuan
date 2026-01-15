@@ -4,7 +4,7 @@
 	<!-- Sidebar - Brand -->
 	<a class="sidebar-brand d-flex align-items-center justify-content-center" href="/admin">
 		{{-- <img src="{{ URL('images1/icon-logo.png') }}" height="30"> --}}
-		<div class="sidebar-brand-text mx-3">PVB SHOP</div>
+		<div class="sidebar-brand-text mx-3">TUẤN PHÚ SHOP</div>
 	</a>
 	
 
@@ -22,14 +22,12 @@
 			<span>Trang chủ</span>
 		</a>
 	</li>
-
 	<li class="nav-item">
-		<a class="nav-link" href="/admin/taikhoan">
-			<i class="fas fa-user"></i>
-			<span>Quản lý Tài khoản</span>
+		<a class="nav-link" href="/admin/contact">
+			<i class="fas fa-trademark"></i>
+			<span>Quản lý Shop</span>
 		</a>
 	</li>
-
 	<li class="nav-item">
 		<a class="nav-link" href="/admin/thuonghieu">
 			<i class="fas fa-trademark"></i>
@@ -71,6 +69,36 @@
 			<span>Quản lý Phân quyền</span>
 		</a>
 	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="/admin/taikhoan">
+			<i class="fas fa-user"></i>
+			<span>Quản lý Tài khoản</span>
+		</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="/admin/comment">
+			<i class="fas fa-user"></i>
+			<span>Quản lý Bình Luận</span>
+		</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="/admin/tonkho">
+			<i class="fas fa-users"></i>
+			<span>Quản lý Số Lượng Hàng</span>
+		</a>
+	</li>
+	<li class="nav-item">
+	<a class="nav-link" href="{{ route('admin.thongke.thongke') }}">
+		<i class="fas fa-chart-bar"></i>
+		<span>Thống kê bán chạy</span>
+	</a>
+</li>	
+	<li class="nav-item">
+	<a class="nav-link" href="{{ route('admin.thongke.thongke') }}">
+	<i class="fas fa-envelope"></i>
+		<span>Liên Hệ Của Khách Hàng</span>
+	</a>
+</li>
 	
 	<br>
 	<!-- Sidebar Toggler (Sidebar) -->

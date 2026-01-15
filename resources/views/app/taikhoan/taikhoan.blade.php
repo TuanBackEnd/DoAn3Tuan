@@ -1,3 +1,4 @@
+
 <div class="card mb-3 shadow-5" style="background-color: #EEEEEE">
     <div class="card-body" style="margin-top:40px">
         <center>
@@ -59,11 +60,11 @@
                                 <label class="form-label">Tên đăng nhập</label>
                             </div>
 
-                            <div class="form-outline mb-4">
+                            <!-- <div class="form-outline mb-4">
                                 <input type="password" class="form-control" name="password"
                                     value="{{$data['password']}}" required />
                                 <label class="form-label">Mật khẩu</label>
-                            </div>
+                            </div> -->
 
                             <button type="submit" class="btn btn-primary">Sửa</button>
                             <a href="/trang-chu" type="button" class="btn btn-info">Quay lại</a>

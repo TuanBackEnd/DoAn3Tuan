@@ -22,4 +22,13 @@ class DanhGia extends Model
         'danh_gia_binh_luan',
         'id_giay',
     ];
+    public function DanhGia()
+    {
+        return $this->hasMany(DanhGia::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

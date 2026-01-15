@@ -18,9 +18,13 @@ class CreateDanhGiaTable extends Migration
             $table->string('id_user');
             $table->string('ten_danh_gia');
             $table->string('danh_gia');
+            // $table->integer('rating');
             $table->longText('danh_gia_binh_luan')->nullable();
             $table->string('id_giay');
             $table->timestamps();
+
+            // $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+    // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -21,13 +21,19 @@ class Giay extends Model
         'ten_thuong_hieu',
         'mo_ta',
         'don_gia',
-        'so_luong',
+        // 'so_luong',
         'hinh_anh_1',
         'hinh_anh_2',
         'hinh_anh_3',
         'hinh_anh_4',
         'ten_khuyen_mai',
         'so_luong_mua',
-
+        'danh_gia',
+        'sizes',
     ];
+
+    public function chitiet()
+{
+    return $this->hasMany(ChiTietGiay::class, 'id_giay', 'id_giay');
+}
 }

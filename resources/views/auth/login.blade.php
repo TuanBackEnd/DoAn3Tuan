@@ -6,8 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>PVB SHOP | Đăng nhập</title>
 	<link rel="shortcut icon" type="image/x-icon" href="{{ URL('images1/icon-logo.png') }}">
-	
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.css" rel="stylesheet" />
@@ -15,7 +13,7 @@
 
 <section class="vh-100" style="background-color: #eee;">
     <div class="container h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100"> 
             <div class="col-lg-12 col-xl-11">
                 <div class="card text-black" style="border-radius: 25px;">
                     <div class="card-body p-md-5">
