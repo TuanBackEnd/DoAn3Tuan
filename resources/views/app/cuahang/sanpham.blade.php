@@ -41,25 +41,25 @@
             <div class="card mb-3">
                 <div class="row g-0">
                     <div class="col-md-4">
-                        <img src="/storage/images/{{ $giay['hinh_anh_1'] }}" alt="..." class="img-fluid rounded-start" />
+                        <img src="{{ asset('storage/images/' . $giay['hinh_anh_1']) }}" alt="..." class="img-fluid rounded-start" />
                         {{-- style="height: 432px" --}}
                         <div class="row ">
                             @if ($giay['hinh_anh_2'])
-                                <div class="col border ripple"><img src="/storage/images/{{ $giay['hinh_anh_2'] }}"
+                                <div class="col border ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_2']) }}"
                                         alt="..." class="img-fluid rounded-start" /></div>
-                            @else <div class="col border ripple"><img src="/storage/images/{{ $giay['hinh_anh_1'] }}"
+                            @else <div class="col border ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_1']) }}"
                                         alt="..." class="img-fluid rounded-start" /></div>
                             @endif
                             @if ($giay['hinh_anh_3'])
-                                <div class="col ripple"><img src="/storage/images/{{ $giay['hinh_anh_3'] }}" alt="..."
+                                <div class="col ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_3']) }}" alt="..."
                                         class="img-fluid rounded-start" /></div>
-                            @else <div class="col ripple"><img src="/storage/images/{{ $giay['hinh_anh_1'] }}"
+                            @else <div class="col ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_1']) }}"
                                         alt="..." class="img-fluid rounded-start" /></div>
                             @endif
                             @if ($giay['hinh_anh_4'])
-                                <div class="col ripple"><img src="/storage/images/{{ $giay['hinh_anh_4'] }}" alt="..."
+                                <div class="col ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_4']) }}" alt="..."
                                         class="img-fluid rounded-start" /></div>
-                            @else <div class="col ripple"><img src="/storage/images/{{ $giay['hinh_anh_1'] }}"
+                            @else <div class="col ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_1']) }}"
                                         alt="..." class="img-fluid rounded-start" /></div>
                             @endif
                         </div>
@@ -159,27 +159,67 @@ foreach ($giay->chitiet as $ct) {
     <span id="so_luong_hien_tai" class="text-muted">Vui lòng chọn size</span>
 </div>
 
+<div class="mb-3">
+    <label for="so_luong" class="form-label"><b>Số lượng:</b></label>
+    <div class="d-flex align-items-center" style="max-width: 200px;">
+        <button type="button" class="btn btn-info px-3" id="btn-giam" onclick="giamSoLuong()">
+            <i class="fas fa-minus"></i>
+        </button>
+        <input type="number" id="so_luong" name="so_luong" value="1" min="1" max="100" 
+               class="form-control text-center mx-2" style="width: 80px;" required>
+        <button type="button" class="btn btn-info px-3" id="btn-tang" onclick="tangSoLuong()">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+</div>
+
 <script>
     var tonKhoData = @json($tonkhoBySize);
+    var maxSoLuong = 0;
 
     $(document).ready(function () {
         $('input[name="size"]').on('change', function () {
             let size = $(this).val();
             let soLuong = tonKhoData[size] ?? 0;
+            maxSoLuong = soLuong;
+
+            // Cập nhật max của input số lượng
+            $('#so_luong').attr('max', soLuong);
 
             if (soLuong > 0) {
                 $('#so_luong_hien_tai')
                     .removeClass('text-muted text-danger')
                     .addClass('text-success')
                     .text(soLuong + ' sản phẩm');
+                
+                // Đặt lại số lượng về 1 nếu vượt quá tồn kho
+                if (parseInt($('#so_luong').val()) > soLuong) {
+                    $('#so_luong').val(1);
+                }
             } else {
                 $('#so_luong_hien_tai')
                     .removeClass('text-success text-muted')
                     .addClass('text-danger')
                     .text('Hết hàng');
+                $('#so_luong').val(0);
             }
         });
     });
+
+    function tangSoLuong() {
+        var current = parseInt($('#so_luong').val());
+        var max = parseInt($('#so_luong').attr('max')) || 100;
+        if (current < max) {
+            $('#so_luong').val(current + 1);
+        }
+    }
+
+    function giamSoLuong() {
+        var current = parseInt($('#so_luong').val());
+        if (current > 1) {
+            $('#so_luong').val(current - 1);
+        }
+    }
 </script>
 
 
@@ -200,6 +240,33 @@ foreach ($giay->chitiet as $ct) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
+        // Validation form trước khi submit
+        $('#addToCartForm').on('submit', function(e) {
+            var sizeSelected = $('input[name="size"]:checked').length > 0;
+            var soLuong = parseInt($('#so_luong').val());
+            var maxSoLuong = parseInt($('#so_luong').attr('max')) || 0;
+            
+            @if(!empty($giay->sizes))
+            if (!sizeSelected) {
+                e.preventDefault();
+                alert('Vui lòng chọn size giày!');
+                return false;
+            }
+            @endif
+            
+            if (soLuong < 1) {
+                e.preventDefault();
+                alert('Số lượng phải lớn hơn 0!');
+                return false;
+            }
+            
+            if (maxSoLuong > 0 && soLuong > maxSoLuong) {
+                e.preventDefault();
+                alert('Số lượng vượt quá tồn kho! Số lượng còn lại: ' + maxSoLuong);
+                return false;
+            }
+        });
+
         $('input[name="size"]').on('change', function () {
             let size = $(this).val();
             let id_giay = {{ $giay['id_giay'] }};
@@ -214,11 +281,21 @@ foreach ($giay->chitiet as $ct) {
                                 .removeClass('text-muted text-danger')
                                 .addClass('text-success')
                                 .text(data.so_luong + ' sản phẩm');
+                            
+                            // Cập nhật max của input số lượng
+                            $('#so_luong').attr('max', data.so_luong);
+                            
+                            // Đặt lại số lượng về 1 nếu vượt quá tồn kho
+                            if (parseInt($('#so_luong').val()) > data.so_luong) {
+                                $('#so_luong').val(1);
+                            }
                         } else {
                             $('#so_luong_hien_tai')
                                 .removeClass('text-success text-muted')
                                 .addClass('text-danger')
                                 .text('Hết hàng');
+                            $('#so_luong').attr('max', 0);
+                            $('#so_luong').val(0);
                         }
                     }
                 });
@@ -417,7 +494,7 @@ foreach ($giay->chitiet as $ct) {
                                     <div class="card" style="margin-bottom: 25px">
                                         <a href="/cua-hang/san-pham={{ $giaytuongtu->id_giay }}">
                                             <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-                                                <center><img src="/storage/images/{{ $giaytuongtu->hinh_anh_1 }}"
+                                                <center><img src="{{ asset('storage/images/' . $giaytuongtu->hinh_anh_1) }}"
                                                         class="img-fluid" style="height:306px; width:306px" /></center>
                                                 <div class="mask"
                                                     style="background-color: rgba(251, 251, 251, 0.15);"></div>
@@ -457,7 +534,7 @@ foreach ($giay->chitiet as $ct) {
                                     <div class="card" style="margin-bottom: 25px">
                                         <a href="/cua-hang/san-pham={{ $giaytuongtu->id_giay }}">
                                             <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-                                                <center><img src="/storage/images/{{ $giaytuongtu->hinh_anh_1 }}"
+                                                <center><img src="{{ asset('storage/images/' . $giaytuongtu->hinh_anh_1) }}"
                                                         class="img-fluid" style="height:306px; width:306px" />
                                                 </center>
                                                 <div class="mask"
@@ -499,7 +576,7 @@ foreach ($giay->chitiet as $ct) {
                                     <div class="card" style="margin-bottom: 25px">
                                         <a href="/cua-hang/san-pham={{ $giaytuongtu->id_giay }}">
                                             <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-                                                <center><img src="/storage/images/{{ $giaytuongtu->hinh_anh_1 }}"
+                                                <center><img src="{{ asset('storage/images/' . $giaytuongtu->hinh_anh_1) }}"
                                                         class="img-fluid" style="height:306px; width:306px" />
                                                 </center>
                                                 <div class="mask"

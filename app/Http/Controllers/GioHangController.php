@@ -63,19 +63,40 @@ class GioHangController extends Controller
         }
 
         $size = $request->input('size');
+        $so_luong = $request->input('so_luong', 1); // Mặc định là 1 nếu không có
+
+        // Validate số lượng
+        if ($so_luong < 1) {
+            return back()->with('error', 'Số lượng phải lớn hơn 0!');
+        }
 
         $ct = \App\Models\ChiTietGiay::where('id_giay', $giay->id_giay)
         ->where('size', $size)
         ->first();
 
         if (!$ct || $ct->so_luong <= 0) {
-        return back()->with('error', 'Sản phẩm đã hết hàng!');
-    }
+            return back()->with('error', 'Sản phẩm đã hết hàng!');
+        }
+
+        // Kiểm tra số lượng có vượt quá tồn kho không
+        if ($so_luong > $ct->so_luong) {
+            return back()->with('error', 'Số lượng vượt quá tồn kho! Số lượng còn lại: ' . $ct->so_luong);
+        }
+
         $cart = session()->get('gio_hang', []);
         $cartItemId = $size ? $id . '-' . $size : $id;
 
         if (isset($cart[$cartItemId])) {
-            $cart[$cartItemId]['so_luong']++;
+            // Nếu sản phẩm đã có trong giỏ, cộng thêm số lượng
+            $so_luong_hien_tai = $cart[$cartItemId]['so_luong'];
+            $so_luong_moi = $so_luong_hien_tai + $so_luong;
+            
+            // Kiểm tra tổng số lượng không vượt quá tồn kho
+            if ($so_luong_moi > $ct->so_luong) {
+                return back()->with('error', 'Tổng số lượng vượt quá tồn kho! Số lượng còn lại: ' . $ct->so_luong);
+            }
+            
+            $cart[$cartItemId]['so_luong'] = $so_luong_moi;
         } else {
             $khuyenmaiValue = 0;
             $khuyenmai = KhuyenMai::where('ten_khuyen_mai', $giay->ten_khuyen_mai)->first();
@@ -88,14 +109,14 @@ class GioHangController extends Controller
                 "ten_giay" => $giay->ten_giay,
                 "hinh_anh_1" => $giay->hinh_anh_1,
                 "don_gia" => $giay->don_gia,
-                "so_luong" => 1,
+                "so_luong" => $so_luong,
                 "khuyen_mai" => $khuyenmaiValue,
                 "size" => $size
             ];
         }
 
         session()->put('gio_hang', $cart);
-        return redirect()->back()->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
+        return redirect()->back()->with('success', 'Đã thêm ' . $so_luong . ' sản phẩm vào giỏ hàng!');
     }
 
     /**

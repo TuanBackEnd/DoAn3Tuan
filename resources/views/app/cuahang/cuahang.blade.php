@@ -143,7 +143,7 @@
                     <div class="card" style="margin-bottom: 25px">
                         <a href="/cua-hang/san-pham={{$giay->id_giay}}">
                             <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light" >
-                                <center><img src="/storage/images/{{$giay->hinh_anh_1}}" class="img-fluid" style="height:306px; width:306px"/></center>
+                                <center><img src="{{ asset('storage/images/' . $giay->hinh_anh_1) }}" class="img-fluid" style="height:306px; width:306px"/></center>
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </div>
                             <div class="card-body">
@@ -176,7 +176,7 @@
                     <div class="card" style="margin-bottom: 25px">
                         <a href="/cua-hang/san-pham={{$giay->id_giay}}">
                             <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light" >
-                                <center><img src="/storage/images/{{$giay->hinh_anh_1}}" class="img-fluid" style="height:306px; width:306px"/></center>
+                                <center><img src="{{ asset('storage/images/' . $giay->hinh_anh_1) }}" class="img-fluid" style="height:306px; width:306px"/></center>
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </div>
                             <div class="card-body">
@@ -208,7 +208,7 @@
                     <div class="card" style="margin-bottom: 25px">
                         <a href="/cua-hang/san-pham={{$giay->id_giay}}">
                             <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-                                <center><img src="/storage/images/{{$giay->hinh_anh_1}}" class="img-fluid" style="height:306px; width:306px"/></center>
+                                <center><img src="{{ asset('storage/images/' . $giay->hinh_anh_1) }}" class="img-fluid" style="height:306px; width:306px"/></center>
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </div>
                             <div class="card-body">

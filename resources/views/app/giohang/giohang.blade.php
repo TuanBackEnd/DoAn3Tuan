@@ -65,7 +65,7 @@
                         </form>
                     </th>
                     <td scope="row">
-                        <img src="/storage/images/{{$giohang['hinh_anh_1']}}" alt="..." class="img-fluid rounded-start"
+                        <img src="{{ asset('storage/images/' . $giohang['hinh_anh_1']) }}" alt="..." class="img-fluid rounded-start"
                             width="100px" />
                     </td>
                     <td>{{$giohang['ten_giay']}}</td>
