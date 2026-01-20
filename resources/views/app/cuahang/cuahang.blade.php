@@ -135,6 +135,15 @@
         <div class="col-xl-9">
             <div class="row">
 
+                @if($giays->count() == 0)
+                <div class="col-12">
+                    <div class="alert alert-info text-center" role="alert">
+                        <h4 class="alert-heading"><i class="fas fa-info-circle"></i> Chưa có sản phẩm nào!</h4>
+                        <p>Hiện tại cửa hàng chưa có sản phẩm nào. Vui lòng thêm sản phẩm từ trang quản trị.</p>
+                    </div>
+                </div>
+                @endif
+
                 @foreach($giays as $giay)
 
                 @if($timloaigiay != '')

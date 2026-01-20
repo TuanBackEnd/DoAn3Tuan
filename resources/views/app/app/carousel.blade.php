@@ -10,7 +10,7 @@
 			<img src="{{ URL('images1/banner1.jpg') }}" class="d-block w-100" alt="..."/>
 
 			<div class="carousel-caption d-none d-md-block">
-				<h5>PVB Shop</h5>
+				<h5>ĐỒ ÁN WEB SHOP</h5>
 				<p>Mua sắm đôi giày mà bạn mơ ước.</p>
 			</div>
 		</div>
@@ -18,19 +18,10 @@
 		<div class="carousel-item">
 			<img src="{{ URL('images1/banner2.jpg') }}" class="d-block w-100" alt="..."/>
 			<div class="carousel-caption d-none d-md-block">
-				<h5>PVB Shop</h5>
+				<h5>ĐỒ ÁN WEB SHOP</h5>
 				<p>Mang lại cho bạn những đôi giày chất lượng nhất.</p>
 			</div>
 		</div>
-
-		<!-- <div class="carousel-item">
-			<img src="{{ URL('images1/banner2.jpg') }}" class="d-block w-100" alt="..."/>
-
-			<div class="carousel-caption d-none d-md-block">
-				<h5>Restaurant Manager</h5>
-				<p>Rất vui vì bạn đang sử dụng dịch vụ của chúng tôi.</p>
-			</div>
-		</div> -->
 	</div>
 
 	<button class="carousel-control-prev" type="button" data-mdb-target="#carouselBasicExample" data-mdb-slide="prev">

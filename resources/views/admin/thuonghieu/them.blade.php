@@ -1,7 +1,23 @@
 @extends('admin.index')
 
 @section('admin_content')
-<div class="card shadow mb-4">
+
+            <!--app-content open-->
+            <div class="app-content main-content mt-0">
+                <div class="side-app">
+                    <!-- CONTAINER -->
+                    <div class="main-container container-fluid">
+                        <!-- PAGE-HEADER -->
+                        <div class="page-header">
+                            <div>
+                                <h1 class="page-title">Quản Lý Thương Hiệu</h1>
+                            </div>
+                        </div>
+                        <!-- PAGE-HEADER END -->
+
+                        <!-- Row -->
+
+                        <div class="card shadow mb-4">
     <div class="card-header py-3">
         <h4 class="" style="margin-top: 10px">
             <strong>THÊM THƯƠNG HIỆU</strong>&ensp;
@@ -29,4 +45,8 @@
 </div>
 
 
-@endsection
+                    </div>
+                </div>
+            </div>
+            <!-- CONTAINER CLOSED -->
+@endsection          

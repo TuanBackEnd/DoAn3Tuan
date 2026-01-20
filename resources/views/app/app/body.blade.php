@@ -152,9 +152,6 @@
 </div>
 <!-- Tabs content -->
 
-
-
-
 <div class="card mb-3 shadow-1">
     <div class="card-body" style="margin-top:40px">
         <center>

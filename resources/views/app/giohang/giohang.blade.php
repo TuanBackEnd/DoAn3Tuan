@@ -1,3 +1,6 @@
+@extends('app.app.app')
+
+@section('content')
 <div class="card mb-3 shadow-5" style="background-color: #EEEEEE">
     <div class="card-body" style="margin-top:40px">
         <center>
@@ -9,6 +12,22 @@
 
 <div class="container">
     <br>
+    
+    <!-- Flash Messages -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/trang-chu">Trang chủ</a></li>
@@ -26,6 +45,7 @@
                     <th scope="col"></th>
                     <th scope="col">Hình ảnh</th>
                     <th scope="col">Tên giày</th>
+                    <th scope="col">Size</th>
                     <th scope="col">Đơn giá</th>
                     <th scope="col">Khuyến mãi</th>
                     <th scope="col">Số lượng</th>
@@ -49,6 +69,13 @@
                             width="100px" />
                     </td>
                     <td>{{$giohang['ten_giay']}}</td>
+                    <td>
+                        @if(!empty($giohang['size']))
+                            <span class="badge bg-primary">{{ $giohang['size'] }}</span>
+                        @else
+                            N/A
+                        @endif
+                    </td>
                     <td>{{number_format($giohang['don_gia'])}} VNĐ</td>
                     <td>{{$giohang['khuyen_mai']}}%</td>
 
@@ -64,7 +91,7 @@
                                 </div>
 
                                 <div class="form-outline" style="width:80px">
-                                    <input id="form1" min="1" name="so_luong" value="{{$giohang['so_luong']}}"
+                                    <input id="form1" min="1" max="100" name="so_luong" value="{{$giohang['so_luong']}}"
                                         type="number" autocomplete="off" class="form-control" />
                                     <label class="form-label" for="form1">Số lượng</label>
                                 </div>&nbsp;
@@ -106,9 +133,11 @@
 
     @foreach($giohangs as $id => $giohang)
     @php
-    $tongtien += $giohang['so_luong'] * $giohang['don_gia'];
+    $tongtien += ($giohang['so_luong'] * $giohang['don_gia']) - ($giohang['so_luong'] * $giohang['don_gia'] * $giohang['khuyen_mai'] * 0.01);
     @endphp
     @endforeach
+
+
     <div class="card ">
         <form class="card-header">
             <div class="float-start">
@@ -126,3 +155,4 @@
     <br>
 
 </div>
+@endsection

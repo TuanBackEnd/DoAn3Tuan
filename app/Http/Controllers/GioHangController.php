@@ -13,6 +13,7 @@ use App\Models\ThuongHieu;
 use App\Models\KhuyenMai;
 use App\Models\GioHang;
 use App\Models\PhanQuyen;
+use App\Models\ChiTietGiay;
 
 class GioHangController extends Controller
 {
@@ -48,36 +49,53 @@ class GioHangController extends Controller
         ;
     }
 
-    public function themvaogiohang($id) {
-        // session()->forget('gio_hang');
-
+    public function themvaogiohang(Request $request, $id) {
         $giay = Giay::find($id);
-        $gio_hang = session()->get(key:'gio_hang');
 
-        $khuyenmais = KhuyenMai::all();
+        if (!$giay) {
+            return back()->with('error', 'Sản phẩm không tồn tại!');
+        }
+        // if ($giay->so_luong <= 0) {
+        //     return back()->with('error', 'Sản phẩm đã hết hàng!');
+        // }
+        if (!empty($giay->sizes) && !$request->has('size')) {
+            return back()->with('error', 'Vui lòng chọn size giày!');
+        }
 
-        if(isset($gio_hang[$id])){
-            $gio_hang[$id]['so_luong'] += 1;
+        $size = $request->input('size');
+
+        $ct = \App\Models\ChiTietGiay::where('id_giay', $giay->id_giay)
+        ->where('size', $size)
+        ->first();
+
+        if (!$ct || $ct->so_luong <= 0) {
+        return back()->with('error', 'Sản phẩm đã hết hàng!');
+    }
+        $cart = session()->get('gio_hang', []);
+        $cartItemId = $size ? $id . '-' . $size : $id;
+
+        if (isset($cart[$cartItemId])) {
+            $cart[$cartItemId]['so_luong']++;
         } else {
-
-            $gio_hang[$id] = [
-                'hinh_anh_1' => $giay['hinh_anh_1'],
-                'ten_giay' => $giay['ten_giay'],
-                'don_gia' => $giay['don_gia'],
-                'so_luong' => '1',
-            ];
-
-            foreach($khuyenmais as $khuyenmai){
-                if($khuyenmai['ten_khuyen_mai'] == $giay['ten_khuyen_mai']){
-                    $gio_hang[$id]['khuyen_mai'] = $khuyenmai['gia_tri_khuyen_mai'];
-                }
+            $khuyenmaiValue = 0;
+            $khuyenmai = KhuyenMai::where('ten_khuyen_mai', $giay->ten_khuyen_mai)->first();
+            if ($khuyenmai) {
+                $khuyenmaiValue = $khuyenmai->gia_tri_khuyen_mai;
             }
-        }        
-        
-        session()->put('gio_hang', $gio_hang);
-        
-        return Redirect('/cua-hang/san-pham='.$id);
-        // return session()->get(key:'gio_hang');
+
+            $cart[$cartItemId] = [
+                "id_giay" => $giay->id_giay,
+                "ten_giay" => $giay->ten_giay,
+                "hinh_anh_1" => $giay->hinh_anh_1,
+                "don_gia" => $giay->don_gia,
+                "so_luong" => 1,
+                "khuyen_mai" => $khuyenmaiValue,
+                "size" => $size
+            ];
+        }
+
+        session()->put('gio_hang', $cart);
+        return redirect()->back()->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
 
     /**
@@ -133,18 +151,38 @@ class GioHangController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
-    {
-        //
-        $giay = Giay::find($request->id);
-        $gio_hang = session()->get(key:'gio_hang');
+{
+    $gio_hang = session()->get('gio_hang');
 
-        
-        $gio_hang[$request->id]['so_luong'] =  $request->so_luong;
-        
-        session()->put('gio_hang', $gio_hang);
-        // return session()->get(key:'gio_hang');
-        return Redirect('/gio-hang');
+    if (!isset($gio_hang[$request->id])) {
+        return Redirect('/gio-hang')->with('error', 'Sản phẩm không tồn tại trong giỏ!');
     }
+
+    $cartItem = $gio_hang[$request->id];
+    $size = $cartItem['size'] ?? null;
+
+    $ct = ChiTietGiay::where('id_giay', $cartItem['id_giay'])
+        ->where('size', $size)
+        ->first();
+
+    if (!$ct) {
+        return Redirect('/gio-hang')->with('error', 'Không tìm thấy tồn kho cho sản phẩm!');
+    }
+
+    if ($request->so_luong > $ct->so_luong) {
+        return Redirect('/gio-hang')->with('error', 'Số lượng vượt quá tồn kho!');
+    }
+
+    if ($request->so_luong < 1) {
+        return Redirect('/gio-hang')->with('error', 'Số lượng phải lớn hơn 0!');
+    }
+
+    $gio_hang[$request->id]['so_luong'] = $request->so_luong;
+    session()->put('gio_hang', $gio_hang);
+
+    return Redirect('/gio-hang')->with('success', 'Đã cập nhật giỏ hàng!');
+}
+
 
     /**
      * Remove the specified resource from storage.

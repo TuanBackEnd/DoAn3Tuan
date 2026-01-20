@@ -1,9 +1,12 @@
-<footer class="sticky-footer bg-white">
-    <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-             © 2021 Bản quyền thuộc về:
-             <a class="text-info" href="/ ">PVB SHOP - Phan Văn Bằng</a>
-        </div>
-    </div>
- </footer>
- 
+
+ <footer class="footer">
+            <div class="container">
+                <div class="row align-items-center flex-row-reverse">
+                    <div class="col-md-12 col-sm-12 text-center">
+                        Copyright © 2024<a href="#">Noa</a>. Designed with
+                        <span class="fa fa-heart text-danger"></span> by
+                        <a href="#"> TUẤN PHÚ </a> All rights reserved
+                    </div>
+                </div>
+            </div>
+</footer>

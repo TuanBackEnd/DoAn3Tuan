@@ -57,12 +57,6 @@ Route::delete('/users/{id}', function($id) {
     return User::destroy($id);
 });
 
-
-
-
-        
-        
-
 Route::get('/cua-hang', function() {
     return Giay::all();
 });

@@ -88,7 +88,9 @@ class DanhGiaController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = DanhGia::all();
+        return View('app.cuahang.sanpham', ['danhgias'=>$data]);
+
     }
 
     /**
@@ -99,7 +101,9 @@ class DanhGiaController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data = DanhGia::find($id);
+        return View('app.cuahang.sanpham', ['danhgia'=>$data]);
+
     }
 
     /**
@@ -111,7 +115,12 @@ class DanhGiaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $phanquyen = DanhGia::find($request->id_phan_quyen);
+        $phanquyen['ten_danh_gia'] = $request->ten_danh_gia;
+      
+        $phanquyen->save();
+        return Redirect('/app/cuahang');
+
     }
 
     /**
@@ -122,6 +131,9 @@ class DanhGiaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = DanhGia::find($id);
+        $data->delete();
+        return Redirect('/app/cuahang');
+
     }
 }
