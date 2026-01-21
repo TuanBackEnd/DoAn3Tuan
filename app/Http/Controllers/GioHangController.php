@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use App\Models\User;
 use App\Models\Giay;
@@ -22,7 +23,7 @@ class GioHangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $data = User::where('id',session('DangNhap'))->first();
         $thuonghieus = ThuongHieu::all();
@@ -36,6 +37,46 @@ class GioHangController extends Controller
         if(!$giohangs){
             $giohangs = array();
         }
+
+        // Kiểm tra tồn kho và cập nhật trạng thái
+        foreach ($giohangs as $id => &$giohang) {
+            $size = $giohang['size'] ?? null;
+            $ct = ChiTietGiay::where('id_giay', $giohang['id_giay'])
+                ->where('size', $size)
+                ->first();
+            
+            if (!$ct || $ct->so_luong <= 0) {
+                $giohang['het_hang'] = true;
+                $giohang['so_luong_con'] = 0;
+            } else {
+                $giohang['het_hang'] = false;
+                $giohang['so_luong_con'] = $ct->so_luong;
+                // Nếu số lượng trong giỏ vượt quá tồn kho, điều chỉnh lại
+                if ($giohang['so_luong'] > $ct->so_luong) {
+                    $giohang['so_luong'] = $ct->so_luong;
+                }
+            }
+        }
+        unset($giohang); // Hủy tham chiếu
+        
+        // Lưu lại session sau khi kiểm tra
+        session()->put('gio_hang', $giohangs);
+
+        // Phân trang: 5 sản phẩm mỗi trang
+        $perPage = 5;
+        $currentPage = $request->get('page', 1);
+        $totalItems = count($giohangs);
+        $offset = ($currentPage - 1) * $perPage;
+        $paginatedItems = array_slice($giohangs, $offset, $perPage, true);
+        
+        // Tạo paginator thủ công
+        $paginator = new LengthAwarePaginator(
+            $paginatedItems,
+            $totalItems,
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
         
         return view('index')->with('route', 'gio-hang')
         ->with('data', $data)
@@ -45,7 +86,9 @@ class GioHangController extends Controller
         ->with('users', $users)
         ->with('phanquyens', $phanquyens)
         ->with('khuyenmais', $khuyenmais)
-        ->with('giohangs', $giohangs)
+        ->with('giohangs', $paginatedItems)
+        ->with('giohangsAll', $giohangs) // Giữ lại để tính tổng tiền
+        ->with('paginator', $paginator)
         ;
     }
 
@@ -180,25 +223,72 @@ class GioHangController extends Controller
     }
 
     $cartItem = $gio_hang[$request->id];
-    $size = $cartItem['size'] ?? null;
+    $oldSize = $cartItem['size'] ?? null;
+    $newSize = $request->input('size', $oldSize);
+    
+    // Nếu thay đổi size, cần tạo item mới và xóa item cũ
+    if ($newSize != $oldSize) {
+        $giay = Giay::find($cartItem['id_giay']);
+        if (!$giay) {
+            return Redirect('/gio-hang')->with('error', 'Sản phẩm không tồn tại!');
+        }
+        
+        // Kiểm tra tồn kho size mới
+        $ct = ChiTietGiay::where('id_giay', $cartItem['id_giay'])
+            ->where('size', $newSize)
+            ->first();
+            
+        if (!$ct || $ct->so_luong <= 0) {
+            return Redirect('/gio-hang')->with('error', 'Size ' . $newSize . ' đã hết hàng!');
+        }
+        
+        $so_luong = $request->input('so_luong', $cartItem['so_luong']);
+        if ($so_luong > $ct->so_luong) {
+            return Redirect('/gio-hang')->with('error', 'Số lượng vượt quá tồn kho! Số lượng còn lại: ' . $ct->so_luong);
+        }
+        
+        // Xóa item cũ
+        unset($gio_hang[$request->id]);
+        
+        // Tạo item mới với size mới
+        $newId = $cartItem['id_giay'] . '-' . $newSize;
+        $khuyenmaiValue = 0;
+        $khuyenmai = KhuyenMai::where('ten_khuyen_mai', $giay->ten_khuyen_mai)->first();
+        if ($khuyenmai) {
+            $khuyenmaiValue = $khuyenmai->gia_tri_khuyen_mai;
+        }
+        
+        $gio_hang[$newId] = [
+            "id_giay" => $cartItem['id_giay'],
+            "ten_giay" => $cartItem['ten_giay'],
+            "hinh_anh_1" => $cartItem['hinh_anh_1'],
+            "don_gia" => $cartItem['don_gia'],
+            "so_luong" => $so_luong,
+            "khuyen_mai" => $khuyenmaiValue,
+            "size" => $newSize
+        ];
+    } else {
+        // Chỉ cập nhật số lượng
+        $size = $oldSize;
+        $ct = ChiTietGiay::where('id_giay', $cartItem['id_giay'])
+            ->where('size', $size)
+            ->first();
 
-    $ct = ChiTietGiay::where('id_giay', $cartItem['id_giay'])
-        ->where('size', $size)
-        ->first();
+        if (!$ct) {
+            return Redirect('/gio-hang')->with('error', 'Không tìm thấy tồn kho cho sản phẩm!');
+        }
 
-    if (!$ct) {
-        return Redirect('/gio-hang')->with('error', 'Không tìm thấy tồn kho cho sản phẩm!');
+        if ($request->so_luong > $ct->so_luong) {
+            return Redirect('/gio-hang')->with('error', 'Số lượng vượt quá tồn kho! Số lượng còn lại: ' . $ct->so_luong);
+        }
+
+        if ($request->so_luong < 1) {
+            return Redirect('/gio-hang')->with('error', 'Số lượng phải lớn hơn 0!');
+        }
+
+        $gio_hang[$request->id]['so_luong'] = $request->so_luong;
     }
 
-    if ($request->so_luong > $ct->so_luong) {
-        return Redirect('/gio-hang')->with('error', 'Số lượng vượt quá tồn kho!');
-    }
-
-    if ($request->so_luong < 1) {
-        return Redirect('/gio-hang')->with('error', 'Số lượng phải lớn hơn 0!');
-    }
-
-    $gio_hang[$request->id]['so_luong'] = $request->so_luong;
     session()->put('gio_hang', $gio_hang);
 
     return Redirect('/gio-hang')->with('success', 'Đã cập nhật giỏ hàng!');
@@ -220,5 +310,14 @@ class GioHangController extends Controller
         session()->put('gio_hang', $gio_hang);
         return Redirect('/gio-hang');
 
+    }
+
+    /**
+     * Xóa toàn bộ sản phẩm trong giỏ hàng
+     */
+    public function destroyAll()
+    {
+        session()->put('gio_hang', []);
+        return Redirect('/gio-hang')->with('success', 'Đã xóa toàn bộ sản phẩm trong giỏ hàng!');
     }
 }

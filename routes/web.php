@@ -51,6 +51,7 @@ Route::post(
 Route::get('/gio-hang', [GioHangController::class, 'index']);
 Route::post('/gio-hang/cap-nhat', [GioHangController::class, 'update']);
 Route::get('/gio-hang/xoa/id={id}', [GioHangController::class, 'destroy']);
+Route::get('/gio-hang/xoa-tat-ca', [GioHangController::class, 'destroyAll'])->name('gio-hang.xoa-tat-ca');
 Route::get('/cua-hang/san-pham={id}/them', [GioHangController::class, 'themvaogiohang'])->name('them-vao-gio-hang');
 
 // Lấy số lượng theo size

@@ -41,26 +41,47 @@
             <div class="card mb-3">
                 <div class="row g-0">
                     <div class="col-md-4">
-                        <img src="{{ asset('storage/images/' . $giay['hinh_anh_1']) }}" alt="..." class="img-fluid rounded-start" />
+                        @php
+                            $imagePath = 'storage/images/' . $giay['hinh_anh_1'];
+                            $imageExists = file_exists(public_path($imagePath)) || file_exists(storage_path('app/public/images/' . $giay['hinh_anh_1']));
+                        @endphp
+                        <img src="{{ $imageExists ? asset($imagePath) : asset('images1/logo.png') }}" alt="{{ $giay['ten_giay'] }}" class="img-fluid rounded-start" onerror="this.src='{{ asset('images1/logo.png') }}'" />
                         {{-- style="height: 432px" --}}
                         <div class="row ">
+                            @php
+                                $img1Path = 'storage/images/' . $giay['hinh_anh_1'];
+                                $img1Exists = file_exists(public_path($img1Path)) || file_exists(storage_path('app/public/images/' . $giay['hinh_anh_1']));
+                                $defaultImg = asset('images1/logo.png');
+                            @endphp
                             @if ($giay['hinh_anh_2'])
-                                <div class="col border ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_2']) }}"
-                                        alt="..." class="img-fluid rounded-start" /></div>
-                            @else <div class="col border ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_1']) }}"
-                                        alt="..." class="img-fluid rounded-start" /></div>
+                                @php
+                                    $img2Path = 'storage/images/' . $giay['hinh_anh_2'];
+                                    $img2Exists = file_exists(public_path($img2Path)) || file_exists(storage_path('app/public/images/' . $giay['hinh_anh_2']));
+                                @endphp
+                                <div class="col border ripple"><img src="{{ $img2Exists ? asset($img2Path) : $defaultImg }}"
+                                        alt="..." class="img-fluid rounded-start" onerror="this.src='{{ $defaultImg }}'" /></div>
+                            @else <div class="col border ripple"><img src="{{ $img1Exists ? asset($img1Path) : $defaultImg }}"
+                                        alt="..." class="img-fluid rounded-start" onerror="this.src='{{ $defaultImg }}'" /></div>
                             @endif
                             @if ($giay['hinh_anh_3'])
-                                <div class="col ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_3']) }}" alt="..."
-                                        class="img-fluid rounded-start" /></div>
-                            @else <div class="col ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_1']) }}"
-                                        alt="..." class="img-fluid rounded-start" /></div>
+                                @php
+                                    $img3Path = 'storage/images/' . $giay['hinh_anh_3'];
+                                    $img3Exists = file_exists(public_path($img3Path)) || file_exists(storage_path('app/public/images/' . $giay['hinh_anh_3']));
+                                @endphp
+                                <div class="col ripple"><img src="{{ $img3Exists ? asset($img3Path) : $defaultImg }}" alt="..."
+                                        class="img-fluid rounded-start" onerror="this.src='{{ $defaultImg }}'" /></div>
+                            @else <div class="col ripple"><img src="{{ $img1Exists ? asset($img1Path) : $defaultImg }}"
+                                        alt="..." class="img-fluid rounded-start" onerror="this.src='{{ $defaultImg }}'" /></div>
                             @endif
                             @if ($giay['hinh_anh_4'])
-                                <div class="col ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_4']) }}" alt="..."
-                                        class="img-fluid rounded-start" /></div>
-                            @else <div class="col ripple"><img src="{{ asset('storage/images/' . $giay['hinh_anh_1']) }}"
-                                        alt="..." class="img-fluid rounded-start" /></div>
+                                @php
+                                    $img4Path = 'storage/images/' . $giay['hinh_anh_4'];
+                                    $img4Exists = file_exists(public_path($img4Path)) || file_exists(storage_path('app/public/images/' . $giay['hinh_anh_4']));
+                                @endphp
+                                <div class="col ripple"><img src="{{ $img4Exists ? asset($img4Path) : $defaultImg }}" alt="..."
+                                        class="img-fluid rounded-start" onerror="this.src='{{ $defaultImg }}'" /></div>
+                            @else <div class="col ripple"><img src="{{ $img1Exists ? asset($img1Path) : $defaultImg }}"
+                                        alt="..." class="img-fluid rounded-start" onerror="this.src='{{ $defaultImg }}'" /></div>
                             @endif
                         </div>
                     </div>
