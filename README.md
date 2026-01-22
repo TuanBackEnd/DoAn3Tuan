@@ -1,9 +1,5 @@
-## PvB SHOES SHOP (Website Laravel)
+##  ĐỒ Án Web SHOP (Website Laravel)
 
-```bash
-# Link website: 
-https://ilyoushoesshop.000webhostapp.com/
-```
 
 ### Install: (Run in Terminal)
 ```bash
@@ -15,7 +11,7 @@ composer install
 npm install
 npm audit fix
 npm run dev
-# create database: pvbshoesshop   # utf8_unicode_ci
+# create database: doanwebshop   # utf8_unicode_ci
 php artisan migrate:fresh --seed
 php artisan key:generate
 php artisan serve
