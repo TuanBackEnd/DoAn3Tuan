@@ -269,7 +269,6 @@ class MainController extends Controller
         return view('auth.register');
     }
 
-    // Register;
     public function storeReg(Request $request){
 
         User::create([
@@ -284,7 +283,6 @@ class MainController extends Controller
         return redirect()->route('auth.login');
     }
 
-    // Login Check;
     public function loginCheck(Request $request){
         $request->validate([
             'ten_dang_nhap' => 'required',
@@ -463,7 +461,7 @@ class MainController extends Controller
      */
     public function update(Request $request)
     {
-        // update
+        // up det
         $data = User::find($request->id);
         $data['ten_nguoi_dung'] = $request->ten_nguoi_dung;
         $data['email'] = $request->email;
