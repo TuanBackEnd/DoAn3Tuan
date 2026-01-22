@@ -15,7 +15,6 @@
 	<!-- Heading -->
 	<div class="sidebar-heading">Chức năng </div>
 
-	<!-- Nav Item - Pages Collapse Menu -->
 	<li class="nav-item">
 		<a class="nav-link" href="/admin">
 			<i class="fas fa-home"></i>
