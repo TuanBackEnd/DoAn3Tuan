@@ -63,6 +63,8 @@ class GioHangController extends Controller
         }
 
         $size = $request->input('size');
+        $quantity = (int) $request->input('so_luong', 1);
+        if ($quantity < 1) $quantity = 1;
 
         $ct = \App\Models\ChiTietGiay::where('id_giay', $giay->id_giay)
         ->where('size', $size)
@@ -75,7 +77,11 @@ class GioHangController extends Controller
         $cartItemId = $size ? $id . '-' . $size : $id;
 
         if (isset($cart[$cartItemId])) {
-            $cart[$cartItemId]['so_luong']++;
+            $newQty = $cart[$cartItemId]['so_luong'] + $quantity;
+            if ($newQty > $ct->so_luong) {
+                return back()->with('error', 'Số lượng trong kho không đủ!');
+            }
+            $cart[$cartItemId]['so_luong'] = $newQty;
         } else {
             $khuyenmaiValue = 0;
             $khuyenmai = KhuyenMai::where('ten_khuyen_mai', $giay->ten_khuyen_mai)->first();
@@ -88,7 +94,7 @@ class GioHangController extends Controller
                 "ten_giay" => $giay->ten_giay,
                 "hinh_anh_1" => $giay->hinh_anh_1,
                 "don_gia" => $giay->don_gia,
-                "so_luong" => 1,
+                "so_luong" => $quantity,
                 "khuyen_mai" => $khuyenmaiValue,
                 "size" => $size
             ];
@@ -199,5 +205,12 @@ class GioHangController extends Controller
         session()->put('gio_hang', $gio_hang);
         return Redirect('/gio-hang');
 
+    }
+
+    // Xóa toàn bộ giỏ hàng
+    public function clearAll()
+    {
+        session()->forget('gio_hang');
+        return Redirect('/gio-hang')->with('success', 'Đã xóa toàn bộ giỏ hàng!');
     }
 }

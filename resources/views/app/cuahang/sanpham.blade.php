@@ -133,8 +133,9 @@ foreach ($giay->chitiet as $ct) {
     @endif
 </p>
 
-<!-- <form action="/cua-hang/san-pham={{ $giay['id_giay'] }}/them" method="GET" id="addToCartForm"> -->
-<form action="/cua-hang/san-pham={{ $giay->id_giay }}/them" method="GET" id="addToCartForm">
+<!-- Form thêm vào giỏ hàng: cho phép nhập số lượng -->
+<form action="/cua-hang/san-pham={{ $giay->id_giay }}/them" method="POST" id="addToCartForm">
+    @csrf
     @if(!empty($giay->sizes))
         <div class="mb-3">
             <label for="shoe_size" class="form-label"><b>Chọn Size:</b></label>
@@ -161,6 +162,13 @@ foreach ($giay->chitiet as $ct) {
     <span id="so_luong_hien_tai" class="text-muted">Vui lòng chọn size</span>
 </div>
 
+<div class="mb-3">
+    <label class="form-label"><b>Số lượng mua:</b></label>
+    <div style="width:120px">
+        <input id="so_luong_mua" name="so_luong" type="number" min="1" value="1" class="form-control" />
+    </div>
+</div>
+
 <script>
     var tonKhoData = @json($tonkhoBySize);
 
@@ -174,11 +182,18 @@ foreach ($giay->chitiet as $ct) {
                     .removeClass('text-muted text-danger')
                     .addClass('text-success')
                     .text(soLuong + ' sản phẩm');
+                // cập nhật max cho input số lượng mua
+                $('#so_luong_mua').attr('max', soLuong);
+                if (parseInt($('#so_luong_mua').val()) > soLuong) {
+                    $('#so_luong_mua').val(soLuong);
+                }
             } else {
                 $('#so_luong_hien_tai')
                     .removeClass('text-success text-muted')
                     .addClass('text-danger')
                     .text('Hết hàng');
+                $('#so_luong_mua').attr('max', 0);
+                $('#so_luong_mua').val(0);
             }
         });
     });
