@@ -145,6 +145,7 @@
                 </h4>
             </div>
                 <div class="float-end">
+                    <a href="/gio-hang/xoa-tat-ca" class="btn btn-danger" style="margin: 15px" onclick="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?');">Xóa toàn bộ</a>
                     <button type="submit" class="btn btn-success" style="margin: 15px" form="thanh-toan">Thanh Toán</button>
                 </div>
             </div>

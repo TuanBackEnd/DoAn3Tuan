@@ -45,7 +45,8 @@ Route::post('/cua-hang/san-pham={id}/danh-gia', [DanhGiaController::class, 'stor
 Route::get('/gio-hang', [GioHangController::class, 'index']);
 Route::post('/gio-hang/cap-nhat', [GioHangController::class, 'update']);
 Route::get('/gio-hang/xoa/id={id}', [GioHangController::class, 'destroy']);
-Route::get('/cua-hang/san-pham={id}/them', [GioHangController::class, 'themvaogiohang'])->name('them-vao-gio-hang');
+Route::get('/gio-hang/xoa-tat-ca', [GioHangController::class, 'clearAll'])->name('gio-hang.xoa-tat-ca');
+Route::post('/cua-hang/san-pham={id}/them', [GioHangController::class, 'themvaogiohang'])->name('them-vao-gio-hang');
 
 // Lấy số lượng theo size
 Route::get('/lay-so-luong/{id_giay}/{size}', [ChiTietGiayController::class, 'laySoLuong']);
